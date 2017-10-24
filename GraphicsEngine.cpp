@@ -22,8 +22,10 @@ GraphicsEngine::GraphicsEngine(Uint32 FLAGS)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.4f, 0.4f, 0.8f, 1.0f);
-
-
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0.0, 1024, 0.0, 768);
+	glViewport(0, 0, 1024, 768);
 	mainLoop();
 }
 
