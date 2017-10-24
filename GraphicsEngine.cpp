@@ -23,32 +23,25 @@ void GraphicsEngine::initSystems() {
 	_window = SDL_CreateWindow("Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _screenWidth, _screenHeight, SDL_WINDOW_SHOWN);
 	if (_window == nullptr)
 		printf("error with window.\n");
-		//Logger::windowError("GraphicsEngine", "Unable to initialize window using SDL!"); // TODO: MAKE LOGGER
-	/** Create an OpenGL context and check if it exists **/
-	SDL_GLContext screenContext = SDL_GL_CreateContext(_window);
-	if (screenContext == nullptr)
-		printf("error with context.\n");
-		//Logger::windowError("GraphicsEngine", "Unable to create OpenGL Context!");
 	/** Initialize GLEW and check if it initialized properly **/
-	if (glewInit() != GLEW_OK)
-		printf("error with glew.\n");
-		//Logger::windowError("GraphicsEngine", "Unable to initialize GLEW!");
-
 	gRenderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
 	if (gRenderer == nullptr) {
 		printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
 	}
 
-
-
-	/** Set some attributes for OpenGL and set the 'clear color' to black **/
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 	mainLoop();
 }
 
 GraphicsEngine::~GraphicsEngine()
 {
+
+	SDL_DestroyRenderer(gRenderer);
+	gRenderer = nullptr;
+
+	SDL_DestroyWindow(_window);
+	_window = nullptr;
+
+	SDL_Quit();
 }
 
 void GraphicsEngine::mainLoop()
@@ -84,9 +77,5 @@ void GraphicsEngine::processInput() {
 }
 
 void GraphicsEngine::drawGame() {
-	glClearDepth(1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	SDL_GL_SwapWindow(_window);
 	
 }
