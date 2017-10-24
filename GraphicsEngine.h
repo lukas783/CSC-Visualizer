@@ -2,10 +2,12 @@
 #define __GRAPHICSENG_H_
 
 #include <SDL/SDL.h>
-#include <GL/glew.h>
 #include <iostream>
+#include <stack>
+#include "panel.h"
 
-enum GameState { PRELOGIN, LOGIN, RUNNING, PAUSED, EXIT };
+
+enum GameState { EXIT, MAIN };
 
 class GraphicsEngine {
 public:
@@ -14,7 +16,7 @@ public:
 	
 	void run();
 private:
-
+	std::stack<GameState> _stateLayers;
 	SDL_Window *_window;
 	SDL_Renderer* gRenderer;
 	GameState _gameState;

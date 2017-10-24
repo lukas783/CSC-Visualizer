@@ -5,7 +5,9 @@ GraphicsEngine::GraphicsEngine()
 	_window = nullptr;
 	_screenWidth = 1024;
 	_screenHeight = 768;
-	_gameState = GameState::RUNNING;
+	_gameState = GameState::MAIN;
+	_stateLayers.push(EXIT);
+	_stateLayers.push(MAIN);
 }
 
 void GraphicsEngine::run() {
@@ -52,10 +54,6 @@ void GraphicsEngine::mainLoop()
 		drawGame();
 
 		//Clear screen
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-		SDL_RenderClear(gRenderer);
-		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
-		SDL_RenderDrawLine(gRenderer, _screenWidth / 2, _screenHeight, _screenWidth / 2, 0);
 		SDL_RenderPresent(gRenderer);
 	}
 }
@@ -77,5 +75,8 @@ void GraphicsEngine::processInput() {
 }
 
 void GraphicsEngine::drawGame() {
-	
+	Panel panel(_screenWidth, _screenHeight, 6, 6);
+	panel.draw(_window, gRenderer);
+	delete panel;
+
 }
