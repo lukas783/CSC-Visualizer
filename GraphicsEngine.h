@@ -9,14 +9,22 @@ enum GameState { PRELOGIN, LOGIN, RUNNING, PAUSED, EXIT };
 
 class GraphicsEngine {
 public:
-	GraphicsEngine(Uint32 FLAGS);
+	GraphicsEngine();
 	~GraphicsEngine();
-	void mainLoop();
-
+	
+	void run();
 private:
-	SDL_Window *window = nullptr;
-	SDL_GLContext screenContext = nullptr;
-	GameState gameState = PRELOGIN;
+
+	SDL_Window *_window;
+	SDL_Renderer* gRenderer;
+	GameState _gameState;
+	void initSystems();
+	void mainLoop();
+	void processInput();
+	void drawGame();
+	int _screenWidth;
+	int _screenHeight;
+
 };
 
 #endif

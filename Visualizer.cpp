@@ -3,7 +3,8 @@
 
 int main(int argc, char*argv[]) {
 
-	GraphicsEngine engine(SDL_WINDOW_OPENGL);
-	
+	GraphicsEngine engine;
+	engine.run();
+
 	return 0;
 }

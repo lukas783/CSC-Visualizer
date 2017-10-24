@@ -1,31 +1,49 @@
 #include "GraphicsEngine.h"
 
-GraphicsEngine::GraphicsEngine(Uint32 FLAGS)
+GraphicsEngine::GraphicsEngine()
 {
+	_window = nullptr;
+	_screenWidth = 1024;
+	_screenHeight = 768;
+	_gameState = GameState::RUNNING;
+}
+
+void GraphicsEngine::run() {
+	initSystems();
+
+	mainLoop();
+}
+
+
+void GraphicsEngine::initSystems() {
+
 	/** Init SDL to use everything SDL offers.. **/
 	SDL_Init(SDL_INIT_EVERYTHING);
 	/** Create a window and check if it exists **/
-	window = SDL_CreateWindow("Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768, FLAGS);
-	if (window == nullptr)
-		printf("error.\n");
+	_window = SDL_CreateWindow("Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _screenWidth, _screenHeight, SDL_WINDOW_SHOWN);
+	if (_window == nullptr)
+		printf("error with window.\n");
 		//Logger::windowError("GraphicsEngine", "Unable to initialize window using SDL!"); // TODO: MAKE LOGGER
 	/** Create an OpenGL context and check if it exists **/
-	screenContext = SDL_GL_CreateContext(window);
+	SDL_GLContext screenContext = SDL_GL_CreateContext(_window);
 	if (screenContext == nullptr)
-		printf("error.\n");
+		printf("error with context.\n");
 		//Logger::windowError("GraphicsEngine", "Unable to create OpenGL Context!");
 	/** Initialize GLEW and check if it initialized properly **/
 	if (glewInit() != GLEW_OK)
-		printf("error.\n");
+		printf("error with glew.\n");
 		//Logger::windowError("GraphicsEngine", "Unable to initialize GLEW!");
+
+	gRenderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+	if (gRenderer == nullptr) {
+		printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+	}
+
+
+
 	/** Set some attributes for OpenGL and set the 'clear color' to black **/
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.4f, 0.4f, 0.8f, 1.0f);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0.0, 1024, 0.0, 768);
-	glViewport(0, 0, 1024, 768);
+	glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 	mainLoop();
 }
 
@@ -35,18 +53,40 @@ GraphicsEngine::~GraphicsEngine()
 
 void GraphicsEngine::mainLoop()
 {
-	SDL_Event sdlEvent;
-	while (gameState != GameState::EXIT) {
-		while (SDL_PollEvent(&sdlEvent)) {
-			switch (sdlEvent.type) {
-			case SDL_QUIT:
-				gameState = GameState::EXIT;
-				break;
-			case SDL_KEYDOWN:
-				//handle key input
-				break;
-			}
-		}
-		SDL_GL_SwapWindow(window);
+	
+	while (_gameState != GameState::EXIT) {
+		processInput();
+		drawGame();
+
+		//Clear screen
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_RenderClear(gRenderer);
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+		SDL_RenderDrawLine(gRenderer, _screenWidth / 2, _screenHeight, _screenWidth / 2, 0);
+		SDL_RenderPresent(gRenderer);
 	}
+}
+
+void GraphicsEngine::processInput() {
+
+	SDL_Event sdlEvent;
+
+	while (SDL_PollEvent(&sdlEvent)) {
+		switch (sdlEvent.type) {
+		case SDL_QUIT:
+			_gameState = GameState::EXIT;
+			break;
+		case SDL_KEYDOWN:
+			//handle key input
+			break;
+		}
+	}
+}
+
+void GraphicsEngine::drawGame() {
+	glClearDepth(1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	SDL_GL_SwapWindow(_window);
+	
 }
